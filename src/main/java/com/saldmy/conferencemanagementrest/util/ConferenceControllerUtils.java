@@ -12,18 +12,25 @@ public class ConferenceControllerUtils {
 
     private static final String INCORRECT_START_DATETIME = "start datetime set incorrectly";
     private static final String ALREADY_FINISHED = "could not cancel already finished conference";
+    private static final String CANCELLED_CONF = "could not finish cancelled conference";
 
     public void checkStatus(Conference conference, ConferenceStatus newStatus) {
         final LocalDateTime start = conference.getStart();
 
         switch (newStatus) {
             case REGISTERED -> {
-                if (start.compareTo(LocalDateTime.now()) > 0) {
+                if (conference.getStatus() == ConferenceStatus.FINISHED) {
+                    throw new IllegalConferenceStatusException(ALREADY_FINISHED);
+                }
+                if (start.compareTo(LocalDateTime.now()) < 0) {
                     throw new IllegalConferenceStatusException(INCORRECT_START_DATETIME);
                 }
             }
             case FINISHED -> {
-                if (start.compareTo(LocalDateTime.now()) < 0) {
+                if (conference.getStatus() == ConferenceStatus.CANCELLED) {
+                    throw new IllegalConferenceStatusException(CANCELLED_CONF);
+                }
+                if (start.compareTo(LocalDateTime.now()) > 0) {
                     throw new IllegalConferenceStatusException(INCORRECT_START_DATETIME);
                 }
             }

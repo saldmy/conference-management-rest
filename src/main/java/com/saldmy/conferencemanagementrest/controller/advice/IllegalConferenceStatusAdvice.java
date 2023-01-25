@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class IllegalConferenceStatusAdvice {
 
     @ExceptionHandler(IllegalConferenceStatusException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     String illegalConferenceStatusHandler(IllegalConferenceStatusException e) {
         return e.getMessage();
     }

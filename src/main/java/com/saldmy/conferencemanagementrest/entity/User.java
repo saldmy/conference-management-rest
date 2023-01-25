@@ -3,28 +3,53 @@ package com.saldmy.conferencemanagementrest.entity;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "registered_user")
 public class User {
 
-    private @Id @GeneratedValue Long id;
+    @Id @GeneratedValue
+    private Long id;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
     private String firstName;
+
+    @Column(nullable = false)
     private String lastName;
+
+    @Column(nullable = false)
     private LocalDate dateOfBirth;
+
+    @Column(nullable = false)
     private UserRole role = UserRole.USER;
-    private @ManyToMany Set<Conference> conferences = new HashSet<>();
-    private @CreationTimestamp LocalDateTime created;
-    private @UpdateTimestamp LocalDateTime updated;
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private Set<Registration> registrations = new HashSet<>();
+
+    @CreationTimestamp
+    private LocalDateTime created;
+
+    @UpdateTimestamp
+    private LocalDateTime updated;
+
 
     public User() {}
 
@@ -64,8 +89,8 @@ public class User {
         return role;
     }
 
-    public Set<Conference> getConferences() {
-        return conferences;
+    public Set<Registration> getRegistrations() {
+        return registrations;
     }
 
     public LocalDateTime getCreated() {
@@ -129,7 +154,7 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
                 ", role=" + role +
-                ", conferences=" + conferences +
+                ", registrations=" + registrations +
                 ", created=" + created +
                 ", updated=" + updated +
                 '}';

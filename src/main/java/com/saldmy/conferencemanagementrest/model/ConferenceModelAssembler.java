@@ -15,7 +15,9 @@ public class ConferenceModelAssembler implements RepresentationModelAssembler<Co
     public EntityModel<Conference> toModel(Conference conference) {
         return EntityModel.of(conference,
                 linkTo(methodOn(ConferenceController.class).one(conference.getId())).withSelfRel(),
-                linkTo(methodOn(ConferenceController.class).all()).withRel("conferences")
+                linkTo(methodOn(ConferenceController.class).all()).withRel("conferences"),
+                linkTo(methodOn(ConferenceController.class).availableSeats(conference.getId())).withRel("availableSeats"),
+                linkTo(methodOn(ConferenceController.class).status(conference.getId())).withRel("status")
         );
     }
 

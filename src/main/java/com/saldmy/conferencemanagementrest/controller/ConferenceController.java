@@ -1,6 +1,6 @@
 package com.saldmy.conferencemanagementrest.controller;
 
-import com.saldmy.conferencemanagementrest.entity.User;
+import com.saldmy.conferencemanagementrest.entity.Registration;
 import com.saldmy.conferencemanagementrest.model.ConferenceModelAssembler;
 import com.saldmy.conferencemanagementrest.exception.ConferenceNotFoundException;
 import com.saldmy.conferencemanagementrest.entity.ConferenceStatus;
@@ -75,9 +75,9 @@ public class ConferenceController {
                     conference.setDuration(newConference.getDuration());
                     conference.setStatus(newConference.getStatus());
 
-                    Set<User> participants = conference.getParticipants();
+                    Set<Registration> participants = conference.getRegistrations();
                     participants.clear();
-                    participants.addAll(newConference.getParticipants());
+                    participants.addAll(newConference.getRegistrations());
 
                     return repository.save(conference);
                 })
@@ -94,6 +94,23 @@ public class ConferenceController {
     public ResponseEntity<?> deleteConference(@PathVariable Long id) {
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/conferences/{id}/available_seats")
+    public ResponseEntity<Integer> availableSeats(@PathVariable Long id) {
+        Conference conference = repository.findById(id)
+                .orElseThrow(() -> new ConferenceNotFoundException(id));
+
+        return ResponseEntity.ok().body(conference.getMaxParticipants() - conference.getRegistrations().size());
+    }
+
+    @GetMapping("/conferences/{id}/status")
+    public ResponseEntity<String> status(@PathVariable Long id) {
+        return ResponseEntity.ok().body(
+                repository.findById(id)
+                        .map(conference -> conference.getStatus().toString())
+                        .orElseThrow(() -> new ConferenceNotFoundException(id))
+        );
     }
 
     @PatchMapping("/conferences/{id}/status")

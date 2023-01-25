@@ -3,10 +3,12 @@ package com.saldmy.conferencemanagementrest.entity;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -15,16 +17,36 @@ import java.util.Set;
 @Entity
 public class Conference {
 
-    private @Id @GeneratedValue Long id;
+    @Id @GeneratedValue
+    private Long id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String place;
+
+    @Column(nullable = false)
     private Integer maxParticipants;
+
+    @Column(nullable = false)
     private LocalDateTime start;
+
+    @Column(nullable = false)
     private Duration duration;
+
+    @Column(nullable = false)
     private ConferenceStatus status = ConferenceStatus.REGISTERED;
-    private @ManyToMany Set<User> participants = new HashSet<>();
-    private @CreationTimestamp LocalDateTime created;
-    private @UpdateTimestamp LocalDateTime updated;
+
+    @OneToMany
+    @JoinColumn(name = "conference_id")
+    private Set<Registration> registrations = new HashSet<>();
+
+    @CreationTimestamp
+    private LocalDateTime created;
+
+    @UpdateTimestamp
+    private LocalDateTime updated;
 
     public Conference() {}
 
@@ -92,8 +114,8 @@ public class Conference {
         this.status = status;
     }
 
-    public Set<User> getParticipants() {
-        return participants;
+    public Set<Registration> getRegistrations() {
+        return registrations;
     }
 
     public LocalDateTime getCreated() {
@@ -129,7 +151,7 @@ public class Conference {
                 ", start=" + start +
                 ", duration=" + duration +
                 ", status=" + status +
-                ", participants=" + participants +
+                ", registrations=" + registrations +
                 ", created=" + created +
                 ", updated=" + updated +
                 '}';

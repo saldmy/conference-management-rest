@@ -1,12 +1,8 @@
 package com.saldmy.conferencemanagementrest.controller;
 
-import com.saldmy.conferencemanagementrest.entity.Conference;
 import com.saldmy.conferencemanagementrest.entity.User;
-import com.saldmy.conferencemanagementrest.exception.ConferenceNotFoundException;
-import com.saldmy.conferencemanagementrest.exception.UserDoesNotParticipateException;
 import com.saldmy.conferencemanagementrest.exception.UserNotFoundException;
 import com.saldmy.conferencemanagementrest.model.UserModelAssembler;
-import com.saldmy.conferencemanagementrest.repository.ConferenceRepository;
 import com.saldmy.conferencemanagementrest.repository.UserRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -14,7 +10,6 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -31,12 +25,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserController {
 
     private final UserRepository repository;
-    private final ConferenceRepository conferenceRepository;
     private final UserModelAssembler assembler;
 
-    public UserController(UserRepository repository, ConferenceRepository conferenceRepository, UserModelAssembler assembler) {
+    public UserController(UserRepository repository, UserModelAssembler assembler) {
         this.repository = repository;
-        this.conferenceRepository = conferenceRepository;
         this.assembler = assembler;
     }
 
@@ -90,44 +82,6 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/users/{userId}/conferences/{conferenceId}")
-    public ResponseEntity<?> participate(@PathVariable Long userId, @PathVariable Long conferenceId) {
-        return repository.findById(userId)
-                .map(user -> {
-                    Conference newConference = conferenceRepository.findById(conferenceId)
-                            .orElseThrow(() -> new ConferenceNotFoundException(conferenceId));
-
-                    user.getConferences().add(newConference);
-
-                    repository.save(user);
-
-                    return ResponseEntity.ok().build();
-                })
-                .orElseThrow(() -> new UserNotFoundException(userId));
-    }
-
-    @DeleteMapping("/users/{userId}/conferences/{conferenceId}")
-    public ResponseEntity<?> withdrawParticipation(@PathVariable Long userId, @PathVariable Long conferenceId) {
-        return repository.findById(userId)
-                .map(user -> {
-                    Conference conference = conferenceRepository.findById(conferenceId)
-                            .orElseThrow(() -> new ConferenceNotFoundException(conferenceId));
-
-                    Set<Conference> conferences = user.getConferences();
-
-                    if (conferences.stream().noneMatch(conference::equals)) {
-                        throw new UserDoesNotParticipateException(userId, conferenceId);
-                    }
-
-                    conferences.remove(conference);
-
-                    repository.save(user);
-
-                    return ResponseEntity.ok().build();
-                })
-                .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
 }
