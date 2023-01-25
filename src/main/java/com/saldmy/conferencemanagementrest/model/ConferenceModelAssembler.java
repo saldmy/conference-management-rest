@@ -1,5 +1,7 @@
-package com.saldmy.conferencemanagementrest;
+package com.saldmy.conferencemanagementrest.model;
 
+import com.saldmy.conferencemanagementrest.controller.ConferenceController;
+import com.saldmy.conferencemanagementrest.entity.Conference;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.saldmy.conferencemanagementrest;
+package com.saldmy.conferencemanagementrest.exception;
 
 public class ConferenceNotFoundException extends RuntimeException {
 

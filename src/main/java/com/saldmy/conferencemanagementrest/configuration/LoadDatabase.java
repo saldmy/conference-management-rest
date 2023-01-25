@@ -1,5 +1,8 @@
-package com.saldmy.conferencemanagementrest;
+package com.saldmy.conferencemanagementrest.configuration;
 
+import com.saldmy.conferencemanagementrest.entity.Conference;
+import com.saldmy.conferencemanagementrest.entity.ConferenceStatus;
+import com.saldmy.conferencemanagementrest.repository.ConferenceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -20,7 +23,7 @@ class LoadDatabase {
         return args -> {
             Conference finishedConference = new Conference(
                     "Environmental Problems in 21st Century",
-                    "12/2 M. Kobylianskoyi Street, Lviv, Ukraine",
+                    "12/2 M. Kobylianskoyi Str, Lviv, Ukraine",
                     200,
                     LocalDateTime.of(2021, Month.APRIL, 11, 18, 0),
                     Duration.ofHours(2)
@@ -28,14 +31,6 @@ class LoadDatabase {
 
             finishedConference.setStatus(ConferenceStatus.FINISHED);
             conferenceRepository.save(finishedConference);
-
-            conferenceRepository.save(new Conference(
-                    "Principles of Effective Developers",
-                    "45 Franka Street, Kropyvnytskii, Ukraine",
-                    45,
-                    LocalDateTime.of(2023, Month.JANUARY, 26, 20, 30),
-                    Duration.ofMinutes(50)
-            ));
 
             Conference cancelled = new Conference(
                     "Principles of Effective Developers",

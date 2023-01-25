@@ -1,5 +1,10 @@
-package com.saldmy.conferencemanagementrest;
+package com.saldmy.conferencemanagementrest.controller;
 
+import com.saldmy.conferencemanagementrest.model.ConferenceModelAssembler;
+import com.saldmy.conferencemanagementrest.exception.ConferenceNotFoundException;
+import com.saldmy.conferencemanagementrest.entity.ConferenceStatus;
+import com.saldmy.conferencemanagementrest.entity.Conference;
+import com.saldmy.conferencemanagementrest.repository.ConferenceRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -29,7 +34,7 @@ public class ConferenceController {
     }
 
     @GetMapping("/conferences")
-    CollectionModel<EntityModel<Conference>> all() {
+    public CollectionModel<EntityModel<Conference>> all() {
         List<EntityModel<Conference>> conferences = repository.findAll().stream()
                 .map(assembler::toModel)
                 .toList();
@@ -38,7 +43,7 @@ public class ConferenceController {
     }
 
     @PostMapping("/conferences")
-    ResponseEntity<?> newConference(@RequestBody Conference newConference) {
+    public ResponseEntity<?> newConference(@RequestBody Conference newConference) {
         EntityModel<Conference> entityModel = assembler.toModel(repository.save(newConference));
 
         return ResponseEntity
@@ -47,7 +52,7 @@ public class ConferenceController {
     }
 
     @GetMapping("/conferences/{id}")
-    EntityModel<Conference> one(@PathVariable Long id) {
+    public EntityModel<Conference> one(@PathVariable Long id) {
         Conference conference = repository.findById(id)
                 .orElseThrow(() -> new ConferenceNotFoundException(id));
 
@@ -55,7 +60,7 @@ public class ConferenceController {
     }
 
     @PutMapping("/conferences/{id}")
-    ResponseEntity<?> replaceConference(@PathVariable Long id, @RequestBody Conference newConference) {
+    public ResponseEntity<?> replaceConference(@PathVariable Long id, @RequestBody Conference newConference) {
         Conference updatedConference = repository.findById(id)
                 .map(conference -> {
                     conference.setTitle(newConference.getTitle());
@@ -77,13 +82,13 @@ public class ConferenceController {
     }
 
     @DeleteMapping("/conferences/{id}")
-    ResponseEntity<?> deleteConference(@PathVariable Long id) {
+    public ResponseEntity<?> deleteConference(@PathVariable Long id) {
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/conferences/{id}/status")
-    ResponseEntity<?> changeStatus(@PathVariable Long id, @RequestBody ConferenceStatus newStatus) {
+    public ResponseEntity<?> changeStatus(@PathVariable Long id, @RequestBody ConferenceStatus newStatus) {
         return repository.findById(id)
                 .map(conference -> {
                     conference.setStatus(newStatus);
