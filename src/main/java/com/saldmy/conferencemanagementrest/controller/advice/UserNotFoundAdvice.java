@@ -1,17 +1,17 @@
 package com.saldmy.conferencemanagementrest.controller.advice;
 
-import com.saldmy.conferencemanagementrest.exception.ConferenceNotFoundException;
+import com.saldmy.conferencemanagementrest.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class ConferenceNotFoundAdvice {
+public class UserNotFoundAdvice {
 
-    @ExceptionHandler(ConferenceNotFoundException.class)
+    @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String conferenceNotFoundHandler(ConferenceNotFoundException e) {
+    String userNotFoundHandler(UserNotFoundException e) {
         return e.getMessage();
     }
 

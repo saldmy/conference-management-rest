@@ -6,8 +6,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Conference {
@@ -19,6 +22,7 @@ public class Conference {
     private LocalDateTime start;
     private Duration duration;
     private ConferenceStatus status = ConferenceStatus.REGISTERED;
+    private @ManyToMany Set<User> participants = new HashSet<>();
     private @CreationTimestamp LocalDateTime created;
     private @UpdateTimestamp LocalDateTime updated;
 
@@ -88,6 +92,10 @@ public class Conference {
         this.status = status;
     }
 
+    public Set<User> getParticipants() {
+        return participants;
+    }
+
     public LocalDateTime getCreated() {
         return created;
     }
@@ -103,30 +111,12 @@ public class Conference {
 
         Conference that = (Conference) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
-        if (place != null ? !place.equals(that.place) : that.place != null) return false;
-        if (maxParticipants != null ? !maxParticipants.equals(that.maxParticipants) : that.maxParticipants != null)
-            return false;
-        if (start != null ? !start.equals(that.start) : that.start != null) return false;
-        if (duration != null ? !duration.equals(that.duration) : that.duration != null) return false;
-        if (status != that.status) return false;
-        if (created != null ? !created.equals(that.created) : that.created != null) return false;
-        return updated != null ? updated.equals(that.updated) : that.updated == null;
+        return id != null ? id.equals(that.id) : that.id == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (place != null ? place.hashCode() : 0);
-        result = 31 * result + (maxParticipants != null ? maxParticipants.hashCode() : 0);
-        result = 31 * result + (start != null ? start.hashCode() : 0);
-        result = 31 * result + (duration != null ? duration.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (created != null ? created.hashCode() : 0);
-        result = 31 * result + (updated != null ? updated.hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
@@ -139,6 +129,7 @@ public class Conference {
                 ", start=" + start +
                 ", duration=" + duration +
                 ", status=" + status +
+                ", participants=" + participants +
                 ", created=" + created +
                 ", updated=" + updated +
                 '}';

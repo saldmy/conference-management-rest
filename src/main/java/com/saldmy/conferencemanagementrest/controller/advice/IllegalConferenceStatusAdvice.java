@@ -1,17 +1,17 @@
 package com.saldmy.conferencemanagementrest.controller.advice;
 
-import com.saldmy.conferencemanagementrest.exception.ConferenceNotFoundException;
+import com.saldmy.conferencemanagementrest.exception.IllegalConferenceStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class ConferenceNotFoundAdvice {
+public class IllegalConferenceStatusAdvice {
 
-    @ExceptionHandler(ConferenceNotFoundException.class)
+    @ExceptionHandler(IllegalConferenceStatusException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String conferenceNotFoundHandler(ConferenceNotFoundException e) {
+    String illegalConferenceStatusHandler(IllegalConferenceStatusException e) {
         return e.getMessage();
     }
 

@@ -1,10 +1,12 @@
 package com.saldmy.conferencemanagementrest.controller;
 
+import com.saldmy.conferencemanagementrest.entity.User;
 import com.saldmy.conferencemanagementrest.model.ConferenceModelAssembler;
 import com.saldmy.conferencemanagementrest.exception.ConferenceNotFoundException;
 import com.saldmy.conferencemanagementrest.entity.ConferenceStatus;
 import com.saldmy.conferencemanagementrest.entity.Conference;
 import com.saldmy.conferencemanagementrest.repository.ConferenceRepository;
+import com.saldmy.conferencemanagementrest.util.ConferenceControllerUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -27,10 +30,12 @@ public class ConferenceController {
 
     private final ConferenceRepository repository;
     private final ConferenceModelAssembler assembler;
+    private final ConferenceControllerUtils utils;
 
-    public ConferenceController(ConferenceRepository repository, ConferenceModelAssembler assembler) {
+    public ConferenceController(ConferenceRepository repository, ConferenceModelAssembler assembler, ConferenceControllerUtils utils) {
         this.repository = repository;
         this.assembler = assembler;
+        this.utils = utils;
     }
 
     @GetMapping("/conferences")
@@ -70,6 +75,10 @@ public class ConferenceController {
                     conference.setDuration(newConference.getDuration());
                     conference.setStatus(newConference.getStatus());
 
+                    Set<User> participants = conference.getParticipants();
+                    participants.clear();
+                    participants.addAll(newConference.getParticipants());
+
                     return repository.save(conference);
                 })
                 .orElseThrow(() -> new ConferenceNotFoundException(id));
@@ -91,7 +100,11 @@ public class ConferenceController {
     public ResponseEntity<?> changeStatus(@PathVariable Long id, @RequestBody ConferenceStatus newStatus) {
         return repository.findById(id)
                 .map(conference -> {
+                    utils.checkStatus(conference, newStatus);
+
                     conference.setStatus(newStatus);
+                    repository.save(conference);
+
                     return ResponseEntity.ok().build();
                 })
                 .orElseThrow(() -> new ConferenceNotFoundException(id));
