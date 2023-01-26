@@ -2,13 +2,8 @@ package com.saldmy.conferencemanagementrest.controller;
 
 import com.saldmy.conferencemanagementrest.entity.Registration;
 import com.saldmy.conferencemanagementrest.entity.RegistrationId;
-import com.saldmy.conferencemanagementrest.exception.ConferenceNotFoundException;
-import com.saldmy.conferencemanagementrest.exception.RegistrationNotFoundException;
-import com.saldmy.conferencemanagementrest.exception.UserNotFoundException;
 import com.saldmy.conferencemanagementrest.model.RegistrationModelAssembler;
-import com.saldmy.conferencemanagementrest.repository.ConferenceRepository;
-import com.saldmy.conferencemanagementrest.repository.RegistrationRepository;
-import com.saldmy.conferencemanagementrest.repository.UserRepository;
+import com.saldmy.conferencemanagementrest.service.RegistrationService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -20,26 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class RegistrationController {
 
-    private final RegistrationRepository repository;
-    private final UserRepository userRepository;
-    private final ConferenceRepository conferenceRepository;
+    private final RegistrationService registrationService;
     private final RegistrationModelAssembler assembler;
 
-    public RegistrationController(RegistrationRepository repository, UserRepository userRepository, ConferenceRepository conferenceRepository, RegistrationModelAssembler assembler) {
-        this.repository = repository;
-        this.userRepository = userRepository;
-        this.conferenceRepository = conferenceRepository;
+    public RegistrationController(RegistrationService registrationService, RegistrationModelAssembler assembler) {
+        this.registrationService = registrationService;
         this.assembler = assembler;
     }
 
     @GetMapping("/registrations")
     public CollectionModel<EntityModel<Registration>> all() {
-        List<EntityModel<Registration>> registrations = repository.findAll().stream()
+        List<EntityModel<Registration>> registrations = registrationService.findAll().stream()
                 .map(assembler::toModel)
                 .toList();
 
@@ -51,40 +43,17 @@ public class RegistrationController {
 
     @GetMapping("/registrations/u={userId}c={conferenceId}")
     public EntityModel<Registration> one(@PathVariable Long userId, @PathVariable Long conferenceId) {
-        RegistrationId id = new RegistrationId(userId, conferenceId);
-
-        Registration registration = repository.findById(id)
-                .orElseThrow(() -> new RegistrationNotFoundException(id));
-
-        return assembler.toModel(registration);
+        return assembler.toModel(registrationService.find(userId, conferenceId));
     }
 
     @PutMapping("/registrations/u={userId}c={conferenceId}")
     public ResponseEntity<?> newRegistration(@PathVariable Long userId, @PathVariable Long conferenceId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-
-        conferenceRepository.findById(conferenceId)
-                .orElseThrow(() -> new ConferenceNotFoundException(conferenceId));
-
-        Registration registration = repository.save(new Registration(new RegistrationId(userId, conferenceId)));
-
-        return ResponseEntity.ok(assembler.toModel(registration));
+        return ResponseEntity.ok(assembler.toModel(registrationService.add(userId, conferenceId)));
     }
 
     @DeleteMapping("/registrations/u={userId}c={conferenceId}")
     public ResponseEntity<?> deleteRegistration(@PathVariable Long userId, @PathVariable Long conferenceId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-        conferenceRepository.findById(conferenceId)
-                .orElseThrow(() -> new ConferenceNotFoundException(conferenceId));
-
-        RegistrationId id = new RegistrationId(userId, conferenceId);
-
-        Registration registration = repository.findById(id)
-                .orElseThrow(() -> new RegistrationNotFoundException(id));
-
-        repository.delete(registration);
+        registrationService.delete(new RegistrationId(userId, conferenceId));
 
         return ResponseEntity.ok().build();
     }

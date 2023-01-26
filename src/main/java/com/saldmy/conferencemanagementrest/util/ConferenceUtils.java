@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Component
-public class ConferenceControllerUtils {
+public class ConferenceUtils {
 
     private static final String INCORRECT_START_DATETIME = "start datetime set incorrectly";
     private static final String ALREADY_FINISHED = "could not cancel already finished conference";
