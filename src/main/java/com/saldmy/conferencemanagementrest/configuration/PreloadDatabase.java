@@ -78,7 +78,7 @@ class PreloadDatabase {
         return args -> {
             User admin = new User(
                     "admin@mail.com",
-                    "adminpass",
+                    "$2a$08$vDKB0RvoSUAOMoyrxKWZXeDiGfAaxCPRlby1raUeSFr6pYfl32BRO",
                     "Dmytro",
                     "Salo",
                     LocalDate.of(1997, Month.JUNE, 7)
@@ -88,7 +88,7 @@ class PreloadDatabase {
 
             userRepository.save(new User(
                 "user1@mail.com",
-                "testpass1",
+                "$2a$08$iSHcpbGzD.zxygVqkkXaVeH5/054aeNpPfBfYkky6Xse9TIAzEIZq",
                 "Arnold",
                 "Schwarzenegger",
                 LocalDate.of(1971, Month.APRIL, 1)
